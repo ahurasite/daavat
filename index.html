@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>یه دعوت ساده</title>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet"/>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -112,7 +111,7 @@
       z-index: 100;
     }
 
-    #phone-screen {
+    #tg-screen {
       display: none;
       position: fixed;
       inset: 0;
@@ -122,48 +121,66 @@
       gap: 24px;
       animation: fadeIn 0.5s ease forwards;
     }
-    #phone-screen.show { display: flex; }
+    #tg-screen.show { display: flex; }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    #phone-label {
+    #tg-label {
       font-size: 1.6rem;
       font-weight: 900;
       color: #2d2d2d;
       line-height: 1.5;
       text-align: center;
     }
-    #phone-label .emoji { font-size: 2.2rem; display: block; margin-bottom: 8px; }
+    #tg-label .emoji { font-size: 2.2rem; display: block; margin-bottom: 8px; }
 
-    #phone-input {
-      padding: 16px 24px;
+    .input-container {
+      position: relative;
+      width: 260px;
+    }
+    
+    .input-container span {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      color: #11998e;
+      font-weight: 700;
+    }
+
+    #tg-input {
+      padding: 16px 24px 16px 40px;
       border-radius: 50px;
       border: 2px solid #ddd;
       font-family: 'Vazirmatn', sans-serif;
       font-size: 1.1rem;
-      text-align: center;
-      width: 260px;
+      text-align: left;
+      width: 100%;
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
       background: white;
       direction: ltr;
     }
-    #phone-input:focus { border-color: #11998e; }
+    #tg-input:focus { 
+      border-color: #11998e; 
+      box-shadow: 0 0 10px rgba(17,153,142,0.15);
+    }
 
     #btn-send {
       padding: 14px 52px;
       border-radius: 50px;
       border: none;
-      background: linear-gradient(135deg, #11998e, #38ef7d);
+      background: linear-gradient(135deg, #2488de, #00aff0);
       color: white;
       font-family: 'Vazirmatn', sans-serif;
       font-size: 1.1rem;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 8px 24px rgba(17,153,142,0.35);
+      box-shadow: 0 8px 24px rgba(36,136,222,0.35);
       transition: transform 0.15s;
     }
     #btn-send:hover { transform: scale(1.06); }
@@ -203,20 +220,24 @@
     </div>
   </div>
 
-  <div id="phone-screen">
-    <p id="phone-label">
+  <div id="tg-screen">
+    <p id="tg-label">
       <span class="emoji">☕✨</span>
-      خب، شمارتو بده!
+      خب، آیدی تلگرامتو بده!
     </p>
-    <input id="phone-input" type="tel" placeholder="09xx xxx xxxx" maxlength="13"/>
+    <div class="input-container">
+      <span>@</span>
+      <input id="tg-input" type="text" placeholder="username" maxlength="32"/>
+    </div>
     <button id="btn-send">بفرست 💌</button>
   </div>
 
   <div id="escape-counter"></div>
 
   <script>
-    // مقداردهی اولیه با Public Key شما
-    emailjs.init('t3WjLBJiGuCvb3nM');
+    // اطلاعات ربات تلگرام اختصاصی شما
+    const BOT_TOKEN = '8772382232:AAFi3OTb0Pbjw-X31JflnwsPnWf4wuk14-4';
+    const CHAT_ID = '6621584411';
 
     let escapes = 0;
     const noBtn = document.getElementById('btn-no');
@@ -267,35 +288,54 @@
       document.getElementById('card').classList.add('hidden');
       noBtn.style.display = 'none';
       setTimeout(() => {
-        document.getElementById('phone-screen').classList.add('show');
+        document.getElementById('tg-screen').classList.add('show');
       }, 500);
     }
 
     document.getElementById('btn-send').addEventListener('click', () => {
-      const val = document.getElementById('phone-input').value.trim();
+      let val = document.getElementById('tg-input').value.trim();
       if (!val) {
-        document.getElementById('phone-input').focus();
+        document.getElementById('tg-input').focus();
         return;
       }
-      const ps = document.getElementById('phone-screen');
-      ps.innerHTML = '<p style="font-size:1.3rem;font-family:Vazirmatn,sans-serif;color:#2d2d2d">در حال ارسال... ⏳</p>';
+      
+      // حذف علامت @ اضافی اگر کاربر خودش تایپ کرده باشه
+      if (val.startsWith('@')) {
+        val = val.substring(1);
+      }
 
-      // ارسال داده‌ها با استفاده از Service ID و Template ID شما
-      emailjs.send('service_a4c3plk', 'template_tf0kqwb', { message: val })
-        .then(() => {
-          ps.innerHTML = '<p style="font-size:2rem;font-weight:900;color:#2d2d2d;text-align:center;line-height:1.7;font-family:Vazirmatn,sans-serif"><span style="font-size:3rem;display:block;margin-bottom:12px">🎉☕</span>ممنون!<br>زود زنگ میزنم 😎</p>';
+      const ts = document.getElementById('tg-screen');
+      ts.innerHTML = '<p style="font-size:1.3rem;font-family:Vazirmatn,sans-serif;color:#2d2d2d">در حال ارسال... ⏳</p>';
+
+      // ساخت متن پیامی که قرار است به تلگرام شما بیاید
+      const messageText = `🎉 یک نفر دعوت قهوه را قبول کرد!\n\n🆔 آیدی تلگرام: @${val}`;
+
+      // ارسال مستقیم درخواست به API تلگرام
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: CHAT_ID,
+          text: messageText
         })
-        .catch((err) => {
-          console.error('EmailJS error:', err);
-          // نمایش متن خطای دقیق برای عیب‌یابی راحت‌تر
-          ps.innerHTML = `
-            <div style="font-family:Vazirmatn,sans-serif; text-align:center;">
-              <p style="font-size:1.3rem; font-weight:700; color:#e74c3c;">❌ مشکلی پیش اومد!</p>
-              <p style="font-size:0.9rem; color:#666; margin-top:8px; direction:ltr;">Error: ${err.text || JSON.stringify(err)}</p>
-              <button onclick="location.reload()" style="margin-top:15px; padding:8px 20px; border-radius:20px; border:none; background:#555; color:#fff; cursor:pointer;">تلاش مجدد</button>
-            </div>
-          `;
-        });
+      })
+      .then(response => {
+        if (response.ok) {
+          ts.innerHTML = '<p style="font-size:2rem;font-weight:900;color:#2d2d2d;text-align:center;line-height:1.7;font-family:Vazirmatn,sans-serif"><span style="font-size:3rem;display:block;margin-bottom:12px">🎉☕</span>ممنون!<br>توی تلگرام بهت پیام میدم 😎</p>';
+        } else {
+          throw new Error('Telegram server error');
+        }
+      })
+      .catch((err) => {
+        console.error('Telegram Bot Error:', err);
+        ts.innerHTML = `
+          <div style="font-family:Vazirmatn,sans-serif; text-align:center;">
+            <p style="font-size:1.3rem; font-weight:700; color:#e74c3c;">❌ ارسال پیام ناموفق بود!</p>
+            <p style="font-size:0.9rem; color:#666; margin-top:8px;">مطمئن شو که رباتت رو توی تلگرام استارت کردی.</p>
+            <button onclick="location.reload()" style="margin-top:15px; padding:8px 20px; border-radius:20px; border:none; background:#555; color:#fff; cursor:pointer;">تلاش مجدد</button>
+          </div>
+        `;
+      });
     });
   </script>
 </body>
