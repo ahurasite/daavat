@@ -116,7 +116,7 @@
       border: 2px solid #ddd;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       position: fixed;
-      transition: left 0.1s, top 0.1s, transform 0.15s;
+      transition: left 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94), top 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       z-index: 100;
     }
 
@@ -250,7 +250,7 @@
 
     let selectedDate = "";
     let escapes = 0;
-    const MAX_ESCAPES = 50; // تعداد دفعات فرار دکمه نه
+    const MAX_ESCAPES = 50; 
     
     const noBtn = document.getElementById('btn-no');
     const yesBtn = document.getElementById('btn-yes');
@@ -265,46 +265,49 @@
     window.addEventListener('load', initNoBtnPos);
     window.addEventListener('resize', initNoBtnPos);
 
-    // فرار دکمه نه
-    function runAway(e) {
-      // اگر تعداد فرارها به ۵۰ رسیده باشد، دیگر فرار نکن و اجازه بده کلیک شود
+    // تابع فرار کاملاً تصادفی و بهینه‌شده برای موبایل و کامپیوتر
+    function teleportButton(e) {
       if (escapes >= MAX_ESCAPES) {
-        return; 
+        return; // بعد از ۵۰ بار دیگه فرار نکن
       }
 
-      const margin = 80;
+      if (e && e.preventDefault) {
+        e.preventDefault(); // جلوگیری از رفتارهای پیش‌فرض لمس در گوشی
+      }
+
+      const padding = 60;
       const btnW = noBtn.offsetWidth;
       const btnH = noBtn.offsetHeight;
-      const maxX = window.innerWidth  - btnW  - margin;
-      const maxY = window.innerHeight - btnH  - margin;
-      const mx = e.clientX, my = e.clientY;
-      const cx = parseFloat(noBtn.style.left) + btnW / 2;
-      const cy = parseFloat(noBtn.style.top)  + btnH / 2;
-      let dx = cx - mx;
-      let dy = cy - my;
-      const dist = Math.sqrt(dx*dx + dy*dy) || 1;
-      const push = 220;
-      let nx = cx + (dx / dist) * push - btnW/2;
-      let ny = cy + (dy / dist) * push - btnH/2;
-      nx = Math.max(margin, Math.min(maxX, nx));
-      ny = Math.max(margin, Math.min(maxY, ny));
-      noBtn.style.left = nx + 'px';
-      noBtn.style.top  = ny + 'px';
+      
+      // محاسبه فضای کل صفحه برای پرش دکمه
+      const maxX = window.innerWidth - btnW - padding;
+      const maxY = window.innerHeight - btnH - padding;
+      
+      // تولید یک مختصات کاملاً تصادفی در صفحه
+      let randomX = Math.floor(Math.random() * (maxX - padding)) + padding;
+      let randomY = Math.floor(Math.random() * (maxY - padding)) + padding;
+      
+      // اعمال مختصات جدید
+      noBtn.style.left = randomX + 'px';
+      noBtn.style.top = randomY + 'px';
       
       escapes++;
       
-      // نمایش کادر تعداد فرارها برای کل‌کل بیشتر 😂
+      // آپدیت شمارنده فرار
       const counterDiv = document.getElementById('escape-counter');
       counterDiv.style.display = 'block';
       counterDiv.textContent = `تلاش‌های ناموفق برای رد کردن: ${escapes} بار 😂`;
     }
 
-    noBtn.addEventListener('mousemove', runAway);
-    noBtn.addEventListener('mouseenter', runAway);
-    noBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      runAway({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
+    // رویدادهای کامپیوتر (موس)
+    noBtn.addEventListener('mouseenter', teleportButton);
+    noBtn.addEventListener('mousemove', function(e) {
+      // برای اینکه مطمئن شویم اگر با سرعت بالا موس رفت، دکمه حتماً جاخالی می‌دهد
+      if(escapes < MAX_ESCAPES) teleportButton(e);
     });
+
+    // رویداد اختصاصی موبایل (لمس صفحه) - کاملاً قطعی و بدون تداخل کلیک
+    noBtn.addEventListener('touchstart', teleportButton, { passive: false });
 
     // رفتن به مرحله تقویم
     function goToStep2() {
