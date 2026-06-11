@@ -187,9 +187,15 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 0.8rem;
-      color: rgba(0,0,0,0.3);
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #ff416c;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 6px 16px;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
       pointer-events: none;
+      display: none;
     }
   </style>
 </head>
@@ -217,7 +223,7 @@
   </div>
 
   <div id="card-step2" class="main-card hidden">
-    <p class="step-title"><span>📅✨</span>چه موقع بیکاری Mom؟</p>
+    <p class="step-title"><span>📅✨</span>چه موقع بیکاری؟</p>
     <input id="date-picker-input" class="custom-input" type="text" placeholder="روی تقویم کلیک کن" readonly />
     <button class="next-btn" onclick="goToStep3()">مرحله بعد 👈</button>
   </div>
@@ -244,6 +250,7 @@
 
     let selectedDate = "";
     let escapes = 0;
+    const MAX_ESCAPES = 50; // تعداد دفعات فرار دکمه نه
     
     const noBtn = document.getElementById('btn-no');
     const yesBtn = document.getElementById('btn-yes');
@@ -260,6 +267,11 @@
 
     // فرار دکمه نه
     function runAway(e) {
+      // اگر تعداد فرارها به ۵۰ رسیده باشد، دیگر فرار نکن و اجازه بده کلیک شود
+      if (escapes >= MAX_ESCAPES) {
+        return; 
+      }
+
       const margin = 80;
       const btnW = noBtn.offsetWidth;
       const btnH = noBtn.offsetHeight;
@@ -278,10 +290,13 @@
       ny = Math.max(margin, Math.min(maxY, ny));
       noBtn.style.left = nx + 'px';
       noBtn.style.top  = ny + 'px';
+      
       escapes++;
-      if (escapes >= 5) {
-        document.getElementById('escape-counter').textContent = `فرار کرده: ${escapes} بار 😂`;
-      }
+      
+      // نمایش کادر تعداد فرارها برای کل‌کل بیشتر 😂
+      const counterDiv = document.getElementById('escape-counter');
+      counterDiv.style.display = 'block';
+      counterDiv.textContent = `تلاش‌های ناموفق برای رد کردن: ${escapes} بار 😂`;
     }
 
     noBtn.addEventListener('mousemove', runAway);
@@ -295,6 +310,7 @@
     function goToStep2() {
       document.getElementById('card-step1').classList.add('hidden');
       noBtn.style.display = 'none';
+      document.getElementById('escape-counter').style.display = 'none';
       document.getElementById('card-step2').classList.remove('hidden');
       
       // فعال‌سازی تقویم شمسی روی اینپوت
