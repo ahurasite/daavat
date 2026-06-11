@@ -215,6 +215,7 @@
   <div id="escape-counter"></div>
 
   <script>
+    // مقداردهی اولیه با Public Key شما
     emailjs.init('t3WjLBJiGuCvb3nM');
 
     let escapes = 0;
@@ -279,13 +280,21 @@
       const ps = document.getElementById('phone-screen');
       ps.innerHTML = '<p style="font-size:1.3rem;font-family:Vazirmatn,sans-serif;color:#2d2d2d">در حال ارسال... ⏳</p>';
 
+      // ارسال داده‌ها با استفاده از Service ID و Template ID شما
       emailjs.send('service_a4c3plk', 'template_tf0kqwb', { message: val })
         .then(() => {
           ps.innerHTML = '<p style="font-size:2rem;font-weight:900;color:#2d2d2d;text-align:center;line-height:1.7;font-family:Vazirmatn,sans-serif"><span style="font-size:3rem;display:block;margin-bottom:12px">🎉☕</span>ممنون!<br>زود زنگ میزنم 😎</p>';
         })
         .catch((err) => {
           console.error('EmailJS error:', err);
-          ps.innerHTML = '<p style="font-size:1.4rem;font-weight:700;color:#e74c3c;text-align:center;font-family:Vazirmatn,sans-serif">❌ مشکلی پیش اومد، دوباره امتحان کن!</p>';
+          // نمایش متن خطای دقیق برای عیب‌یابی راحت‌تر
+          ps.innerHTML = `
+            <div style="font-family:Vazirmatn,sans-serif; text-align:center;">
+              <p style="font-size:1.3rem; font-weight:700; color:#e74c3c;">❌ مشکلی پیش اومد!</p>
+              <p style="font-size:0.9rem; color:#666; margin-top:8px; direction:ltr;">Error: ${err.text || JSON.stringify(err)}</p>
+              <button onclick="location.reload()" style="margin-top:15px; padding:8px 20px; border-radius:20px; border:none; background:#555; color:#fff; cursor:pointer;">تلاش مجدد</button>
+            </div>
+          `;
         });
     });
   </script>
