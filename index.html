@@ -86,8 +86,9 @@
       display: flex;
       gap: 20px;
       justify-content: center;
-      flex-wrap: wrap;
+      align-items: center;
       position: relative;
+      min-height: 60px;
     }
 
     .btn {
@@ -115,8 +116,8 @@
       color: #555;
       border: 2px solid #ddd;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      position: fixed;
-      transition: left 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94), top 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      /* تغییر بسیار مهم: ابتدا در جریان عادی کارت قرار دارد */
+      position: relative; 
       z-index: 100;
     }
 
@@ -251,21 +252,12 @@
     let selectedDate = "";
     let escapes = 0;
     const MAX_ESCAPES = 50; 
+    let isFloating = false; // بررسی اینکه آیا دکمه وارد فاز پرواز شده یا نه
     
     const noBtn = document.getElementById('btn-no');
     const yesBtn = document.getElementById('btn-yes');
 
-    // تنظیم موقعیت اولیه دکمه نه
-    function initNoBtnPos() {
-      if(!noBtn || !yesBtn) return;
-      const rect = yesBtn.getBoundingClientRect();
-      noBtn.style.left = (rect.right + 20) + 'px';
-      noBtn.style.top  = rect.top + 'px';
-    }
-    window.addEventListener('load', initNoBtnPos);
-    window.addEventListener('resize', initNoBtnPos);
-
-    // تابع فرار کاملاً تصادفی و بهینه‌شده برای موبایل و کامپیوتر
+    // تابع فرار کاملاً تصادفی و بهینه‌شده
     function teleportButton(e) {
       if (escapes >= MAX_ESCAPES) {
         return; 
@@ -273,6 +265,12 @@
 
       if (e && e.preventDefault) {
         e.preventDefault(); 
+      }
+
+      // اولین باری که کاربر دکمه را لمس می‌کند یا موس را می‌آورد، دکمه به حالت fixed در می‌آید
+      if (!isFloating) {
+        noBtn.style.position = 'fixed';
+        isFloating = true;
       }
 
       const padding = 60;
@@ -285,6 +283,14 @@
       let randomX = Math.floor(Math.random() * (maxX - padding)) + padding;
       let randomY = Math.floor(Math.random() * (maxY - padding)) + padding;
       
+      // جلوگیری از اینکه در اولین پرش دقیقاً زیر دست یا موس بیفتد
+      if(escapes === 0 && e) {
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        if(clientX && Math.abs(randomX - clientX) < 100) randomX += 150;
+        if(clientY && Math.abs(randomY - clientY) < 100) randomY += 150;
+      }
+
       noBtn.style.left = randomX + 'px';
       noBtn.style.top = randomY + 'px';
       
@@ -295,11 +301,13 @@
       counterDiv.textContent = `تلاش‌های ناموفق برای رد کردن: ${escapes} بار 😂`;
     }
 
+    // رویدادهای موس (کامپیوتر)
     noBtn.addEventListener('mouseenter', teleportButton);
     noBtn.addEventListener('mousemove', function(e) {
       if(escapes < MAX_ESCAPES) teleportButton(e);
     });
 
+    // رویداد لمس (موبایل)
     noBtn.addEventListener('touchstart', teleportButton, { passive: false });
 
     // رفتن به مرحله تقویم
@@ -342,7 +350,6 @@
       const currentCard = document.getElementById('card-step3');
       currentCard.innerHTML = '<p style="font-size:1.3rem;font-weight:700;color:#2d2d2d">در حال هماهنگ کردن قرار قهوه... ⏳</p>';
 
-      // ساخت متن نهایی برای ارسال به تلگرام شما
       const messageText = `🎉 دعوت قهوه قبول شد!\n\n📅 تاریخ انتخابی: ${selectedDate}\n🆔 آیدی مخاطب: ${idVal}`;
 
       fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
