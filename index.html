@@ -116,7 +116,6 @@
       color: #555;
       border: 2px solid #ddd;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      /* تغییر بسیار مهم: ابتدا در جریان عادی کارت قرار دارد */
       position: relative; 
       z-index: 100;
     }
@@ -252,7 +251,7 @@
     let selectedDate = "";
     let escapes = 0;
     const MAX_ESCAPES = 50; 
-    let isFloating = false; // بررسی اینکه آیا دکمه وارد فاز پرواز شده یا نه
+    let isFloating = false; 
     
     const noBtn = document.getElementById('btn-no');
     const yesBtn = document.getElementById('btn-yes');
@@ -267,7 +266,6 @@
         e.preventDefault(); 
       }
 
-      // اولین باری که کاربر دکمه را لمس می‌کند یا موس را می‌آورد، دکمه به حالت fixed در می‌آید
       if (!isFloating) {
         noBtn.style.position = 'fixed';
         isFloating = true;
@@ -283,7 +281,6 @@
       let randomX = Math.floor(Math.random() * (maxX - padding)) + padding;
       let randomY = Math.floor(Math.random() * (maxY - padding)) + padding;
       
-      // جلوگیری از اینکه در اولین پرش دقیقاً زیر دست یا موس بیفتد
       if(escapes === 0 && e) {
         const clientX = e.clientX || (e.touches && e.touches[0].clientX);
         const clientY = e.clientY || (e.touches && e.touches[0].clientY);
@@ -301,13 +298,11 @@
       counterDiv.textContent = `تلاش‌های ناموفق برای رد کردن: ${escapes} بار 😂`;
     }
 
-    // رویدادهای موس (کامپیوتر)
     noBtn.addEventListener('mouseenter', teleportButton);
     noBtn.addEventListener('mousemove', function(e) {
       if(escapes < MAX_ESCAPES) teleportButton(e);
     });
 
-    // رویداد لمس (موبایل)
     noBtn.addEventListener('touchstart', teleportButton, { passive: false });
 
     // رفتن به مرحله تقویم
@@ -339,7 +334,7 @@
       document.getElementById('card-step3').classList.remove('hidden');
     }
 
-    // ارسال همه داده‌ها به تلگرام
+    // تابع اصلی ارسال اطلاعات به تلگرام (کاملاً فیکس شد)
     function sendDataToTelegram() {
       const idVal = document.getElementById('id-input').value.trim();
       if (!idVal) {
@@ -373,7 +368,7 @@
         currentCard.innerHTML = `
           <div style="text-align:center;">
             <p style="font-size:1.2rem; font-weight:700; color:#e74c3c;">❌ یه مشکلی در ارسال پیش اومد!</p>
-            <button onclick="location.reload()" style="margin-top:15px; padding:8px 20px; border-radius:20px; border:none; background:#555; color:#fff; cursor:pointer;">تلاش مجدد</button>
+            <button onclick="location.reload()" style="margin-top:15px; padding:8px 20px; border-radius:20px; border:none; background:#11998e; color:#fff; cursor:pointer;">تلاش مجدد</button>
           </div>
         `;
       });
