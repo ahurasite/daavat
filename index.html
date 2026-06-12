@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>یه دعوت خوشمزه 🍢</title>
+  <title>یه دعوت شیک ☕</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet"/>
   
@@ -76,7 +76,7 @@
     }
     #question span {
       display: inline-block;
-      background: linear-gradient(90deg, #ff416c, #ff4b2b);
+      background: linear-gradient(90deg, #11998e, #38ef7d);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       font-weight: 900;
@@ -105,9 +105,9 @@
     .btn:active { transform: scale(0.98); }
 
     #btn-yes {
-      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+      background: linear-gradient(135deg, #11998e, #38ef7d);
       color: #fff;
-      box-shadow: 0 8px 24px rgba(255, 65, 108, 0.3);
+      box-shadow: 0 8px 24px rgba(17, 153, 142, 0.3);
     }
     
     #btn-no {
@@ -148,8 +148,8 @@
       margin-bottom: 24px;
     }
     .custom-input:focus {
-      border-color: #ff416c;
-      box-shadow: 0 0 12px rgba(255, 65, 108, 0.15);
+      border-color: #11998e;
+      box-shadow: 0 0 12px rgba(17, 153, 142, 0.15);
     }
 
     .next-btn {
@@ -189,7 +189,7 @@
       transform: translateX(-50%);
       font-size: 0.9rem;
       font-weight: bold;
-      color: #ff416c;
+      color: #11998e;
       background: rgba(255, 255, 255, 0.8);
       padding: 6px 16px;
       border-radius: 20px;
@@ -214,7 +214,7 @@
   <div id="card-step1" class="main-card">
     <img id="frog-img" src="Frog.jpg" alt="آقا قورباغه" />
     <p id="question">
-      میتونم به <span>دو سیخ کوبیده</span> دعوتت کنم؟ 🍢✨
+      میتونم به یه <span>قهوه</span> مهمونتون کنم؟ ☕✨
     </p>
     <div class="btn-row">
       <button class="btn" id="btn-yes" onclick="goToStep2()">آره 😄</button>
@@ -231,13 +231,13 @@
   <div id="card-step3" class="main-card hidden">
     <p class="step-title"><span>💌💬</span>ایدیتو بده!</p>
     <input id="id-input" class="custom-input" type="text" placeholder="Telegram / Insta ID" style="direction: ltr;" />
-    <button class="next-btn" style="background: linear-gradient(135deg, #ff416c, #ff4b2b); box-shadow: 0 8px 24px rgba(255, 65, 108, 0.3);" onclick="sendDataToTelegram()">تایید نهایی 🐾</button>
+    <button class="next-btn" onclick="sendDataToTelegram()">تایید نهایی 🐾</button>
   </div>
 
   <div id="card-success" class="main-card hidden">
     <img id="success-img" src="Frog2.jpg" alt="کرمیت عاشق" />
     <p style="font-size:1.6rem; font-weight:900; color:#2d2d2d; line-height:1.7;">
-      ممنون!<br>بهت پیام میدم 😎🍢
+      ممنون!<br>بهت پیام میدم 😎☕
     </p>
   </div>
 
@@ -268,45 +268,38 @@
     // تابع فرار کاملاً تصادفی و بهینه‌شده برای موبایل و کامپیوتر
     function teleportButton(e) {
       if (escapes >= MAX_ESCAPES) {
-        return; // بعد از ۵۰ بار دیگه فرار نکن
+        return; 
       }
 
       if (e && e.preventDefault) {
-        e.preventDefault(); // جلوگیری از رفتارهای پیش‌فرض لمس در گوشی
+        e.preventDefault(); 
       }
 
       const padding = 60;
       const btnW = noBtn.offsetWidth;
       const btnH = noBtn.offsetHeight;
       
-      // محاسبه فضای کل صفحه برای پرش دکمه
       const maxX = window.innerWidth - btnW - padding;
       const maxY = window.innerHeight - btnH - padding;
       
-      // تولید یک مختصات کاملاً تصادفی در صفحه
       let randomX = Math.floor(Math.random() * (maxX - padding)) + padding;
       let randomY = Math.floor(Math.random() * (maxY - padding)) + padding;
       
-      // اعمال مختصات جدید
       noBtn.style.left = randomX + 'px';
       noBtn.style.top = randomY + 'px';
       
       escapes++;
       
-      // آپدیت شمارنده فرار
       const counterDiv = document.getElementById('escape-counter');
       counterDiv.style.display = 'block';
       counterDiv.textContent = `تلاش‌های ناموفق برای رد کردن: ${escapes} بار 😂`;
     }
 
-    // رویدادهای کامپیوتر (موس)
     noBtn.addEventListener('mouseenter', teleportButton);
     noBtn.addEventListener('mousemove', function(e) {
-      // برای اینکه مطمئن شویم اگر با سرعت بالا موس رفت، دکمه حتماً جاخالی می‌دهد
       if(escapes < MAX_ESCAPES) teleportButton(e);
     });
 
-    // رویداد اختصاصی موبایل (لمس صفحه) - کاملاً قطعی و بدون تداخل کلیک
     noBtn.addEventListener('touchstart', teleportButton, { passive: false });
 
     // رفتن به مرحله تقویم
@@ -316,7 +309,6 @@
       document.getElementById('escape-counter').style.display = 'none';
       document.getElementById('card-step2').classList.remove('hidden');
       
-      // فعال‌سازی تقویم شمسی روی اینپوت
       $("#date-picker-input").persianDatepicker({
         format: 'YYYY/MM/DD',
         autoClose: true,
@@ -348,10 +340,10 @@
       }
 
       const currentCard = document.getElementById('card-step3');
-      currentCard.innerHTML = '<p style="font-size:1.3rem;font-weight:700;color:#2d2d2d">در حال فیکس کردن قرار کوبیده... ⏳</p>';
+      currentCard.innerHTML = '<p style="font-size:1.3rem;font-weight:700;color:#2d2d2d">در حال هماهنگ کردن قرار قهوه... ⏳</p>';
 
       // ساخت متن نهایی برای ارسال به تلگرام شما
-      const messageText = `🍢 اوووف! دعوت دو سیخ کوبیده قبول شد!\n\n📅 تاریخ انتخابی: ${selectedDate}\n🆔 آیدی مخاطب: ${idVal}`;
+      const messageText = `🎉 دعوت قهوه قبول شد!\n\n📅 تاریخ انتخابی: ${selectedDate}\n🆔 آیدی مخاطب: ${idVal}`;
 
       fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
         method: 'POST',
